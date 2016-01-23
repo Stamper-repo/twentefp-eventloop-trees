@@ -15,9 +15,11 @@ module FPPrac.Trees
     
 import Prelude
 
-import Eventloop.EventloopCore
-import Eventloop.Types.EventTypes
+import Eventloop.Core
+import Eventloop.Types.Events
+import Eventloop.Types.System
 import Eventloop.DefaultConfiguration
+
 import qualified Eventloop.Module.Websocket.Canvas as C
 import Eventloop.Module.DrawTrees
 import Eventloop.Module.BasicShapes
@@ -28,12 +30,15 @@ data ProgramState = ProgramState
 
 beginProgramState = ProgramState
 
-eventloopConfig trees = defaultConfig { moduleConfigurations=[ defaultDrawTreesModuleConfiguration
-                                                             , defaultBasicShapesModuleConfiguration
-                                                             , C.defaultCanvasModuleConfiguration
-                                                             ]}
-                where
-                    defaultConfig = allModulesEventloopConfiguration beginProgramState (eventloop trees)
+eventloopConfiguration trees
+    = EventloopSetupConfiguration
+        { beginProgstate = beginProgramState
+        , eventloopF = eventloop trees
+        , setupModuleConfigurations = [ setupDrawTreesModuleConfiguration
+                                      , setupBasicShapesModuleConfiguration
+                                      , C.setupCanvasModuleConfiguration
+                                      ]
+        }
 
 
 
@@ -66,4 +71,4 @@ showTree :: (GeneralizeTree a) => a -> IO ()
 showTree tree = showTreeList [tree]
 
 showTreeList :: (GeneralizeTree a) => [a] -> IO ()
-showTreeList trees = startMainloop (eventloopConfig $ map generalizeTree trees)
+showTreeList trees = startEventloopSystem (eventloopConfiguration $ map generalizeTree trees)
