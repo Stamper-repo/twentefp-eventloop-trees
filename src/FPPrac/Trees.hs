@@ -10,6 +10,10 @@ module FPPrac.Trees
     , showRoseTreeList
     , showTree
     , showTreeList
+
+    -- ToRoseTree Generics
+    , ToRoseTree (..)
+    , genericToRoseTree
     ) where
     
     
